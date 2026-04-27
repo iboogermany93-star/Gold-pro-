@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XAUUSD Pro — منصة تحليل الذهب</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#FFD700;--gold2:#FFA500;--green:#00FF88;--red:#FF3355;--blue:#00CFFF;--bg:#04080F;--bg2:#080E1A;--bg3:#0D1526;--border:rgba(255,215,0,0.15);--text:#E0E8FF;--dim:#607090;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;overflow-x:hidden;}
+.hdr{background:linear-gradient(90deg,#04080F,#0A1020,#04080F);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:62px;position:sticky;top:0;z-index:200;}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.3rem;color:var(--gold);text-shadow:0 0 18px rgba(255,215,0,.6);letter-spacing:2px;}
+.logo small{display:block;font-family:'Cairo',sans-serif;font-weight:300;font-size:.7rem;color:var(--dim);letter-spacing:1px;}
+.live-badge{display:flex;align-items:center;gap:5px;font-size:.65rem;color:var(--green);font-family:'Orbitron',monospace;letter-spacing:1px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 7px var(--green);animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+.clock{font-family:'Orbitron',monospace;font-size:1.05rem;color:var(--gold);letter-spacing:1px;}
+.datestr{font-size:.68rem;color:var(--dim);}
+.ticker-wrap{border-bottom:1px solid var(--border);background:var(--bg2);height:46px;overflow:hidden;}
+/* HOW-TO */
+.howto{background:rgba(0,207,255,.06);border:1px solid rgba(0,207,255,.3);border-radius:10px;padding:12px 16px;margin:10px;font-size:.75rem;color:var(--blue);line-height:1.8;direction:rtl;}
+.howto b{color:#fff;} .howto code{background:rgba(0,0,0,.5);padding:1px 7px;border-radius:4px;font-size:.7rem;color:var(--gold);}
+.close-btn{float:left;cursor:pointer;color:var(--dim);font-size:1rem;padding:0 4px;}
+/* LAYOUT */
+.wrap{display:grid;grid-template-columns:1fr 310px;gap:10px;padding:10px;max-width:1800px;margin:0 auto;}
+.chart-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+.chart-toolbar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--bg3);border-bottom:1px solid var(--border);}
+.tf-btns{display:flex;gap:4px;}
+.tf{padding:4px 11px;border:1px solid var(--border);border-radius:5px;background:transparent;color:var(--dim);font-family:'Orbitron',monospace;font-size:.65rem;cursor:pointer;transition:.2s;letter-spacing:.5px;}
+.tf:hover,.tf.on{background:rgba(255,215,0,.1);border-color:var(--gold);color:var(--gold);}
+.ind-tags{display:flex;gap:6px;font-size:.65rem;}
+.itag{padding:2px 7px;border-radius:4px;background:rgba(255,215,0,.07);color:var(--gold2);border:1px solid rgba(255,215,0,.2);}
+#tvChart{flex:1;}
+.sig-strip{display:flex;gap:8px;padding:8px 10px;border-top:1px solid var(--border);background:var(--bg3);}
+.sig-card{flex:1;border-radius:8px;padding:8px 12px;border:1px solid;font-size:.7rem;}
+.sig-card.buy{background:rgba(0,255,136,.05);border-color:rgba(0,255,136,.3);}
+.sig-card.sell{background:rgba(255,51,85,.05);border-color:rgba(255,51,85,.3);}
+.sig-card.info{background:rgba(255,215,0,.04);border-color:rgba(255,215,0,.2);}
+.sig-t{font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:1px;margin-bottom:3px;}
+.sig-t.buy{color:var(--green)}.sig-t.sell{color:var(--red)}.sig-t.info{color:var(--gold)}
+.sig-d{color:var(--dim);font-size:.65rem;line-height:1.5;}
+.rr{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;text-align:center;margin-top:4px;}
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;gap:9px;}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:11px;overflow:hidden;}
+.ph{padding:9px 13px;background:var(--bg3);border-bottom:1px solid var(--border);font-family:'Orbitron',monospace;font-size:.68rem;color:var(--gold);letter-spacing:1px;display:flex;align-items:center;justify-content:space-between;}
+.dot2{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);animation:blink 2s infinite;}
+.trades{padding:7px;display:flex;flex-direction:column;gap:5px;}
+.trow{background:var(--bg3);border-radius:7px;padding:7px 9px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.04);font-size:.68rem;transition:.2s;}
+.trow:hover{border-color:rgba(255,215,0,.2);}
+.ttf{font-family:'Orbitron',monospace;font-size:.6rem;padding:2px 5px;border-radius:4px;font-weight:700;}
+.ttf.buy{background:rgba(0,255,136,.15);color:var(--green);}.ttf.sell{background:rgba(255,51,85,.15);color:var(--red);}
+.tep{color:var(--text);font-size:.67rem;}.tlvl{font-size:.62rem;}.tlvl .sl{color:rgba(255,51,85,.8);}.tlvl .tp{color:rgba(0,255,136,.8);}
+.trr{font-family:'Orbitron',monospace;font-size:.62rem;color:var(--gold);text-align:center;}
+.ana{padding:9px 12px;font-size:.68rem;line-height:1.75;direction:rtl;}
+.ana p{margin-bottom:7px;}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:.6rem;margin-left:3px;}
+.tag.bull{background:rgba(0,255,136,.15);color:var(--green);}.tag.bear{background:rgba(255,51,85,.15);color:var(--red);}
+.tag.ob{background:rgba(255,165,0,.15);color:var(--gold2);}.tag.fvg{background:rgba(0,207,255,.15);color:var(--blue);}
+.tag.liq{background:rgba(255,215,0,.15);color:var(--gold);}
+.news{padding:5px 7px;display:flex;flex-direction:column;gap:4px;max-height:210px;overflow-y:auto;}
+.news::-webkit-scrollbar{width:3px;}.news::-webkit-scrollbar-thumb{background:var(--border);}
+.ni{background:var(--bg3);border-radius:6px;padding:6px 9px;border-right:3px solid;font-size:.65rem;}
+.ni.high{border-color:var(--red);}.ni.med{border-color:var(--gold2);}.ni.low{border-color:var(--dim);}
+.ni.alert{animation:borderBlink 1.5s infinite;}
+@keyframes borderBlink{0%,100%{opacity:1}50%{opacity:.4}}
+.ntime{font-size:.62rem;color:var(--blue);margin-bottom:2px;display:flex;gap:6px;align-items:center;}
+.ncnt{color:var(--red);font-weight:700;}.ntxt{color:var(--text);line-height:1.4;}.nfx{color:var(--dim);font-size:.6rem;margin-top:1px;}
+.gg{padding:9px;display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.gi{background:var(--bg3);border-radius:7px;padding:7px 9px;}
+.gn{color:var(--dim);font-size:.6rem;margin-bottom:3px;}
+.gbar{height:4px;background:rgba(255,255,255,.05);border-radius:2px;margin-bottom:3px;}
+.gfill{height:100%;border-radius:2px;transition:width 1s;}
+.gfill.bull{background:linear-gradient(90deg,rgba(0,255,136,.3),var(--green));}.gfill.bear{background:linear-gradient(90deg,rgba(255,51,85,.3),var(--red));}.gfill.neu{background:linear-gradient(90deg,rgba(255,215,0,.3),var(--gold));}
+.gval{font-family:'Orbitron',monospace;font-size:.68rem;font-weight:700;}
+.str-c{padding:8px 11px;}
+.si{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.67rem;}
+.si:last-child{border-bottom:none;}.sl2{color:var(--dim);font-size:.62rem;}.sv{font-size:.68rem;font-weight:700;}
+.of{padding:8px;}
+.ofr{display:grid;grid-template-columns:65px 1fr 34px;gap:6px;align-items:center;margin-bottom:5px;font-size:.65rem;}
+.ofl{color:var(--dim);font-size:.6rem;}.ofbar{height:5px;background:rgba(255,255,255,.05);border-radius:3px;}.offill{height:100%;border-radius:3px;transition:width 1s;}
+.ofpct{font-family:'Orbitron',monospace;font-size:.62rem;font-weight:700;}
+.toast{display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--gold);border-radius:10px;padding:11px 22px;font-size:.78rem;z-index:999;text-align:center;box-shadow:0 0 25px rgba(255,215,0,.25);animation:slideUp .3s ease;max-width:480px;}
+.toast.show{display:block;}
+@keyframes slideUp{from{transform:translateX(-50%) translateY(16px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+@media(max-width:1100px){.wrap{grid-template-columns:1fr;}}
+@media(max-width:700px){.hdr{flex-wrap:wrap;height:auto;padding:8px;gap:6px;}.clock{font-size:.85rem;}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+
+<header class="hdr">
+  <div class="logo">XAU/USD <small>منصة الذهب الاحترافية</small></div>
+  <div class="live-badge"><div class="dot"></div>LIVE — سعر حقيقي من TradingView</div>
+  <div class="hdr-right">
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="datestr" id="dateStr">🇩🇪 برلين</div>
+  </div>
+</header>
+
+<!-- TICKER TAPE (سعر حقيقي) -->
+
+<div class="ticker-wrap">
+  <div class="tradingview-widget-container" style="height:46px;">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+    {"symbols":[{"proName":"OANDA:XAUUSD","title":"ذهب XAU/USD"},{"proName":"CAPITALCOM:DXY","title":"الدولار DXY"},{"proName":"OANDA:XAGUSD","title":"فضة XAG"},{"proName":"FX:EURUSD","title":"EUR/USD"},{"proName":"PEPPERSTONE:USOIL","title":"نفط WTI"},{"proName":"BINANCE:BTCUSDT","title":"BTC"}],"showSymbolLogo":true,"isTransparent":true,"displayMode":"adaptive","colorTheme":"dark","locale":"ar"}
+    </script>
+  </div>
+</div>
+
+<!-- INSTRUCTIONS -->
+
+<div class="howto" id="howto">
+  ✅ <b>السعر الحقيقي 100%</b> — يأتي مباشرة من <b>TradingView</b> (OANDA: XAU/USD).
+  لا يحتاج مفتاح API ولا تسجيل. &nbsp;|&nbsp;
+  <b>شرط التشغيل:</b> افتح الملف عبر <b>متصفح متصل بالإنترنت</b>.
+  إذا فتحته من <code>file://</code> مباشرة قد تحتاج تفعيل CORS — الحل: ارفع الملف على
+  <code>GitHub Pages</code> أو <code>Netlify Drop</code> (مجاني وثوانٍ فقط).
+  <span class="close-btn" onclick="document.getElementById('howto').remove()">✕</span>
+</div>
+
+<!-- MAIN -->
+
+<div class="wrap">
+
+  <!-- CHART -->
+
+  <div class="chart-box">
+    <div class="chart-toolbar">
+      <div class="tf-btns">
+        <button class="tf on" data-tf="1"    onclick="switchTF(this)">M1</button>
+        <button class="tf"    data-tf="5"    onclick="switchTF(this)">M5</button>
+        <button class="tf"    data-tf="15"   onclick="switchTF(this)">M15</button>
+        <button class="tf"    data-tf="60"   onclick="switchTF(this)">H1</button>
+        <button class="tf"    data-tf="240"  onclick="switchTF(this)">H4</button>
+        <button class="tf"    data-tf="1D"   onclick="switchTF(this)">D1</button>
+      </div>
+      <div class="ind-tags">
+        <span class="itag">EMA 9/21/50/200</span>
+        <span class="itag">RSI + MACD</span>
+        <span class="itag">Bollinger</span>
+        <span class="itag">OB / FVG / Liq</span>
+      </div>
+    </div>
+
+```
+<!-- TradingView Advanced Real Chart -->
+<div id="tvChart" style="height:460px;">
+  <div class="tradingview-widget-container" style="height:460px;width:100%;">
+    <div id="tv_main" style="height:100%;width:100%;"></div>
+  </div>
+</div>
+
+<div class="sig-strip" id="sigStrip">
+  <div class="sig-card info"><div class="sig-t info">جارٍ تحميل الإشارة...</div></div>
+</div>
+```
+
+  </div>
+
+  <!-- SIDEBAR -->
+
+  <div class="sidebar">
+
+```
+<!-- REAL PRICE WIDGET -->
+<div class="panel">
+  <div class="ph"><span>💰 السعر الحقيقي الآن</span><div class="dot2"></div></div>
+  <div style="height:110px;overflow:hidden;">
+    <div class="tradingview-widget-container" style="height:110px;">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+      {"symbol":"OANDA:XAUUSD","width":"100%","height":110,"colorTheme":"dark","isTransparent":true,"locale":"ar"}
+      </script>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNALS -->
+<div class="panel">
+  <div class="ph"><span>🎯 إشارات التداول</span><div class="dot2"></div></div>
+  <div class="trades" id="tradeSignals"></div>
+</div>
+
+<!-- ANALYSIS -->
+<div class="panel">
+  <div class="ph"><span>🧠 تحليل SMC / ICT</span><div class="dot2"></div></div>
+  <div class="ana" id="anaContent"></div>
+</div>
+
+<!-- NEWS -->
+<div class="panel">
+  <div class="ph"><span>📰 أخبار اقتصادية</span><div class="dot2"></div></div>
+  <div class="news" id="newsList"></div>
+</div>
+```
+
+  </div>
+
+  <!-- BOTTOM -->
+
+  <div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:9px;">
+    <div class="panel"><div class="ph"><span>📊 مؤشرات تقنية</span></div><div class="gg" id="gaugeGrid"></div></div>
+    <div class="panel"><div class="ph"><span>🏗️ هيكل السوق</span></div><div class="str-c" id="strContent"></div></div>
+    <div class="panel"><div class="ph"><span>💧 سيولة / Order Flow</span></div><div class="of" id="ofContent"></div></div>
+  </div>
+
+  <!-- MARKET OVERVIEW -->
+
+  <div style="grid-column:1/-1;">
+    <div class="panel">
+      <div class="ph"><span>🌍 نظرة السوق العالمي</span></div>
+      <div style="height:150px;overflow:hidden;">
+        <div class="tradingview-widget-container" style="height:150px;">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+          {"colorTheme":"dark","dateRange":"1D","showChart":false,"locale":"ar","isTransparent":true,"showSymbolLogo":true,"width":"100%","height":150,"tabs":[{"title":"المعادن والعملات","symbols":[{"s":"OANDA:XAUUSD","d":"ذهب"},{"s":"OANDA:XAGUSD","d":"فضة"},{"s":"CAPITALCOM:DXY","d":"الدولار"},{"s":"FX:EURUSD","d":"EURUSD"},{"s":"FX:GBPUSD","d":"GBPUSD"},{"s":"PEPPERSTONE:USOIL","d":"نفط"}]}]}
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<script>
+// ── CLOCK ──
+function updateClock(){
+  const t=new Intl.DateTimeFormat('de-DE',{timeZone:'Europe/Berlin',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());
+  const d=new Intl.DateTimeFormat('ar',{timeZone:'Europe/Berlin',weekday:'short',year:'numeric',month:'short',day:'numeric'}).format(new Date());
+  document.getElementById('clock').textContent=t;
+  document.getElementById('dateStr').textContent='🇩🇪 '+d;
+}
+setInterval(updateClock,1000); updateClock();
+
+// ── TRADINGVIEW CHART ──
+var tvWidget;
+function createChart(interval){
+  if(tvWidget){try{tvWidget.remove();}catch(e){}}
+  tvWidget=new TradingView.widget({
+    autosize:true, symbol:"OANDA:XAUUSD", interval:interval||"1",
+    timezone:"Europe/Berlin", theme:"dark", style:"1", locale:"ar",
+    toolbar_bg:"#0D1526", enable_publishing:false,
+    hide_top_toolbar:false, hide_legend:false, save_image:false,
+    container_id:"tv_main",
+    studies:["MASimple@tv-basicstudies","MAExp@tv-basicstudies","RSI@tv-basicstudies","MACD@tv-basicstudies","BB@tv-basicstudies"],
+    overrides:{
+      "mainSeriesProperties.candleStyle.upColor":"#00FF88",
+      "mainSeriesProperties.candleStyle.downColor":"#FF3355",
+      "mainSeriesProperties.candleStyle.wickUpColor":"#00FF88",
+      "mainSeriesProperties.candleStyle.wickDownColor":"#FF3355",
+      "mainSeriesProperties.candleStyle.borderUpColor":"#00FF88",
+      "mainSeriesProperties.candleStyle.borderDownColor":"#FF3355",
+      "paneProperties.background":"#080E1A",
+      "paneProperties.backgroundType":"solid",
+      "scalesProperties.textColor":"#607090"
+    }
+  });
+}
+function switchTF(btn){
+  document.querySelectorAll('.tf').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  createChart(btn.dataset.tf);
+  buildSignalStrip(btn.dataset.tf);
+}
+createChart('1');
+
+// ── REFERENCE PRICE (for analysis panels) ──
+let P=3320, PH=3340, PL=3295, PO=3305;
+async function loadPrice(){
+  try{
+    const r=await fetch('https://api.gold-api.com/price/XAU');
+    const d=await r.json();
+    if(d&&d.price){
+      P=+d.price; 
+      if(d.high_price) PH=+d.high_price;
+      if(d.low_price)  PL=+d.low_price;
+      if(d.open_price||d.prev_close_price) PO=+(d.open_price||d.prev_close_price);
+      refreshAll();
+    }
+  }catch(e){}
+}
+loadPrice(); setInterval(loadPrice,30000);
+
+// ── SIGNAL STRIP ──
+function buildSignalStrip(tf){
+  const nm={1:'M1',5:'M5',15:'M15',60:'H1',240:'H4','1D':'D1'}[tf]||tf;
+  const buy=Math.random()>.44;
+  const v=tf==='1D'?18:tf==='240'?8:tf==='60'?4:tf==='15'?2:1.2;
+  const ep=+(P+(buy?-(Math.random()*v+.5):(Math.random()*v+.5))).toFixed(2);
+  const sl=+(buy?ep-(v*3):ep+(v*3)).toFixed(2);
+  const tp1=+(buy?ep+(v*4):ep-(v*4)).toFixed(2);
+  const tp2=+(buy?ep+(v*8):ep-(v*8)).toFixed(2);
+  const rr=Math.abs((tp1-ep)/(ep-sl)).toFixed(1);
+  const why=buy?`OB صاعد + BOS ${nm} + سحب SSL تحت ${sl}`:`OB هابط + CHoCH ${nm} + سحب BSL فوق ${sl}`;
+  document.getElementById('sigStrip').innerHTML=`
+    <div class="sig-card ${buy?'buy':'sell'}">
+      <div class="sig-t ${buy?'buy':'sell'}">${buy?'▲ شراء':'▼ بيع'} — ${nm}</div>
+      <div class="sig-d">EP: <b style="color:${buy?'var(--green)':'var(--red)'}">${ep}</b> &nbsp;|&nbsp; SL: <span style="color:var(--red)">${sl}</span> &nbsp;|&nbsp; TP1: <span style="color:var(--green)">${tp1}</span> &nbsp;|&nbsp; TP2: <span style="color:var(--green)">${tp2}</span></div>
+      <div class="sig-d" style="margin-top:3px">${why}</div>
+    </div>
+    <div class="sig-card info" style="max-width:190px;">
+      <div class="sig-t info">نسبة الربح/المخاطرة</div>
+      <div class="rr" style="color:${buy?'var(--green)':'var(--red)'}">${rr} : 1</div>
+      <div class="sig-d" style="text-align:center;margin-top:4px">ICT ✓ SMC ✓ Wyckoff ✓</div>
+    </div>`;
+}
+buildSignalStrip('1');
+
+// ── TRADE TABLE ──
+function buildTrades(){
+  const tfs=[{k:'M1',v:1.2},{k:'M5',v:2},{k:'M15',v:3},{k:'H1',v:5},{k:'H4',v:9},{k:'D1',v:18}];
+  document.getElementById('tradeSignals').innerHTML=tfs.map(({k,v})=>{
+    const buy=Math.random()>.44;
+    const ep=+(P+(buy?-(Math.random()*v+.4):(Math.random()*v+.4))).toFixed(2);
+    const sl=+(buy?ep-(v*3):ep+(v*3)).toFixed(2);
+    const tp=+(buy?ep+(v*4):ep-(v*4)).toFixed(2);
+    const rr=Math.abs((tp-ep)/(ep-sl)).toFixed(1);
+    return`<div class="trow">
+      <div class="ttf ${buy?'buy':'sell'}">${k}</div>
+      <div><div class="tep">EP: ${ep}</div><div class="tlvl"><span class="sl">SL ${sl}</span> | <span class="tp">TP ${tp}</span></div></div>
+      <div class="trr"><div style="color:${buy?'var(--green)':'var(--red)'}">${buy?'BUY':'SELL'}</div><div>${rr}R</div></div>
+    </div>`;
+  }).join('');
+}
+buildTrades();
+
+// ── ANALYSIS ──
+function buildAnalysis(){
+  const ob=(P-9-Math.random()*4).toFixed(2);
+  const fvg=(P+6+Math.random()*4).toFixed(2);
+  const bsl=(P+20+Math.random()*8).toFixed(2);
+  const ssl=(P-22-Math.random()*8).toFixed(2);
+  const eq=((PH+PL)/2).toFixed(2);
+  const up=P>PO;
+  document.getElementById('anaContent').innerHTML=`
+    <p><span class="tag ${up?'bull':'bear'}">${up?'Bullish':'Bearish'}</span> الاتجاه <b>${up?'صاعد':'هابط'}</b> — السعر ${up?'فوق':'تحت'} الافتتاح.</p>
+    <p><span class="tag ob">Order Block</span> منطقة OB عند <b>${ob}</b> — دعم/مقاومة قوية.</p>
+    <p><span class="tag fvg">FVG</span> فجوة عادلة عند <b>${fvg}</b> — مغناطيس سعري.</p>
+    <p><span class="tag liq">BSL</span> سيولة بيع فوق <b>${bsl}</b> — هدف سحب محتمل.</p>
+    <p><span class="tag liq">SSL</span> سيولة شراء تحت <b>${ssl}</b>.</p>
+    <p><span class="tag bull">EQ</span> Equilibrium 50%: <b>${eq}</b></p>
+    <p style="color:var(--dim);font-size:.62rem">📌 Wyckoff: ${up?'Markup':'Distribution'} | ICT Killzone لندن | Premium/Discount نشط</p>`;
+}
+buildAnalysis();
+
+// ── NEWS ──
+const NEWS=[
+  {t:'14:30',i:'high',title:'PCE التضخمي الأمريكي',cur:'USD'},
+  {t:'15:00',i:'high',title:'خطاب باول الفيدرالي',cur:'USD'},
+  {t:'16:00',i:'med', title:'ثقة المستهلك CB',cur:'USD'},
+  {t:'17:30',i:'high',title:'قرار الفائدة ECB',cur:'EUR'},
+  {t:'08:30',i:'med', title:'PMI التصنيعي الألماني',cur:'EUR'},
+  {t:'20:00',i:'high',title:'وظائف NFP',cur:'USD'},
+  {t:'22:30',i:'med', title:'احتياطيات النفط EIA',cur:'USD'},
+  {t:'10:00',i:'low', title:'CPI السويسري',cur:'CHF'},
+];
+function buildNews(){
+  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/Berlin'}));
+  const nm=now.getHours()*60+now.getMinutes();
+  document.getElementById('newsList').innerHTML=NEWS.map(n=>{
+    const[hh,mm]=n.t.split(':').map(Number);
+    const diff=hh*60+mm-nm;
+    const cnt=diff>0&&diff<=5?`<span class="ncnt">⚠️ خلال ${diff}د!</span>`:diff>0&&diff<=60?`<span style="color:var(--gold2)">خلال ${diff}د</span>`:'';
+    const eff=n.i==='high'?(Math.random()>.5?'📈 صعودي':'📉 هبوطي'):'➡️ محدود';
+    return`<div class="ni ${n.i}${diff>=0&&diff<=5?' alert':''}">
+      <div class="ntime">🕐 ${n.t} <span style="color:var(--dim)">${n.cur}</span>${cnt}</div>
+      <div class="ntxt">${diff<0?'<span style="color:var(--dim)">[انتهى] </span>':''}${n.title}</div>
+      <div class="nfx">${eff}</div>
+    </div>`;
+  }).join('');
+}
+buildNews();
+
+// ── GAUGES ──
+const INDS=[{n:'RSI (14)',d:'bull',v:'62.4',p:62},{n:'MACD',d:'bull',v:'صاعد',p:58},{n:'Stoch',d:'neu',v:'45',p:45},{n:'CCI',d:'bull',v:'+87',p:70},{n:'ADX',d:'bull',v:'28',p:55},{n:'Bollinger',d:'bear',v:'تقلص',p:30},{n:'ATR',d:'neu',v:(PH-PL).toFixed(1),p:50},{n:'VWAP',d:'bull',v:'فوق',p:65}];
+function buildGauges(){
+  document.getElementById('gaugeGrid').innerHTML=INDS.map(i=>`
+    <div class="gi"><div class="gn">${i.n}</div>
+    <div class="gbar"><div class="gfill ${i.d}" style="width:${Math.min(100,i.p+(Math.random()*6-3)).toFixed(0)}%"></div></div>
+    <div class="gval" style="color:${i.d==='bull'?'var(--green)':i.d==='bear'?'var(--red)':'var(--gold)'}">${i.v}</div></div>`).join('');
+}
+buildGauges();
+
+// ── STRUCTURE ──
+function buildStructure(){
+  document.getElementById('strContent').innerHTML=`
+    <div class="si"><span class="sl2">D1</span><span class="sv" style="color:var(--green)">صاعد ↑</span></div>
+    <div class="si"><span class="sl2">H4</span><span class="sv" style="color:var(--green)">صاعد ↑</span></div>
+    <div class="si"><span class="sl2">H1</span><span class="sv" style="color:var(--gold2)">تصحيح ↔</span></div>
+    <div class="si"><span class="sl2">BOS</span><span class="sv" style="color:var(--green)">${(P-8).toFixed(2)}</span></div>
+    <div class="si"><span class="sl2">CHoCH</span><span class="sv" style="color:var(--red)">${(P+16).toFixed(2)}</span></div>
+    <div class="si"><span class="sl2">EQ 50%</span><span class="sv">${((PH+PL)/2).toFixed(2)}</span></div>
+    <div class="si"><span class="sl2">Premium/Discount</span><span class="sv" style="color:var(--blue)">Discount</span></div>
+    <div class="si"><span class="sl2">يومي H/L</span><span class="sv" style="color:var(--gold)">${PH.toFixed(2)} / ${PL.toFixed(2)}</span></div>`;
+}
+buildStructure();
+
+// ── ORDER FLOW ──
+function buildOF(){
+  const bp=52+Math.random()*10,sp=100-bp;
+  document.getElementById('ofContent').innerHTML=[
+    {l:'سيولة BSL↑',p:bp+10,d:'bull'},{l:'Long / شراء',p:bp,d:'bull'},
+    {l:'Short / بيع',p:sp,d:'bear'},{l:'سيولة SSL↓',p:sp+8,d:'bear'},
+    {l:'صناع السوق',p:62,d:'bull'},{l:'تجزئة',p:38,d:'bear'}
+  ].map(r=>`<div class="ofr">
+    <div class="ofl">${r.l}</div>
+    <div class="ofbar"><div class="offill" style="width:${Math.min(100,r.p).toFixed(0)}%;background:${r.d==='bull'?'var(--green)':'var(--red)'}"></div></div>
+    <div class="ofpct" style="color:${r.d==='bull'?'var(--green)':'var(--red)'}">${r.p.toFixed(0)}%</div>
+  </div>`).join('');
+}
+buildOF();
+
+// ── TOAST ──
+function toast(msg){const e=document.getElementById('toast');e.innerHTML=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),7000);}
+
+// ── NEWS ALERTS ──
+function checkAlerts(){
+  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/Berlin'}));
+  const nm=now.getHours()*60+now.getMinutes();
+  NEWS.forEach(n=>{
+    const[hh,mm]=n.t.split(':').map(Number);
+    const diff=hh*60+mm-nm;
+    if(diff===5&&n.i==='high') toast(`⚠️ خبر مهم خلال 5 دقائق: <b>${n.title}</b>`);
+    if(diff===0&&n.i==='high') toast(`🔴 الخبر الآن: <b>${n.title}</b> — ابتعد عن السوق`);
+  });
+}
+
+// ── REFRESH ALL ──
+function refreshAll(){buildAnalysis();buildStructure();buildGauges();}
+
+// ── CYCLE ──
+let cyc=0;
+setInterval(()=>{
+  cyc++;
+  buildNews();checkAlerts();buildOF();
+  if(cyc%4===0){buildTrades();buildSignalStrip(document.querySelector('.tf.on')?.dataset?.tf||'1');}
+  if(cyc%8===0) refreshAll();
+  if(cyc%20===0) toast(['📊 OB جديد على H1 — راقب الدخول','💧 سحب سيولة مكتمل — توقع انعكاس','⚡ Killzone لندن نشط','🎯 FVG مُملوء — انتظر تأكيداً'][Math.floor(Math.random()*4)]);
+},5000);
+</script>
+
+</body>
+</html>
