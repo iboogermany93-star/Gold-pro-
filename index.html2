@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Pro Analytics | تحليل الذهب الاحترافي</title>
+    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --bg-hover: #252b3d;
+            --border-color: #2d3748;
+            --gold-primary: #ffd700;
+            --gold-secondary: #ffb800;
+            --gold-dark: #b8860b;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --buy-color: #10b981;
+            --sell-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1f2e 0%, #0f172a 100%);
+            border-bottom: 2px solid var(--gold-dark);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #000;
+            font-weight: 900;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .logo-text {
+            font-size: 26px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .time-box {
+            text-align: center;
+            padding: 8px 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid var(--gold-dark);
+            border-radius: 10px;
+        }
+
+        .time-label {
+            font-size: 11px;
+            color: var(--gold-secondary);
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .time-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--gold-primary);
+            font-family: 'Courier New', monospace;
+        }
+
+        .price-ticker {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .ticker-item {
+            text-align: center;
+        }
+
+        .ticker-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ticker-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--gold-primary);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .ticker-change {
+            font-size: 14px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 2px;
+        }
+
+        .change-up { color: var(--success); background: rgba(16, 185, 129, 0.1); }
+        .change-down { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 15px;
+            padding: 15px;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--gold-dark);
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--gold-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i {
+            color: var(--gold-secondary);
+        }
+
+        /* Timeframes */
+        .timeframe-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .tf-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .tf-btn:hover, .tf-btn.active {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: #000;
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            height: 600px;
+            position: relative;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--gold-primary);
+        }
+
+        .chart-tools {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tool-btn {
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+        }
+
+        .tool-btn.active {
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--gold-primary);
+            border-color: var(--gold-primary);
+        }
+
+        #chart {
+            width: 100%;
+            height: calc(100% - 50px);
+            border-radius: 8px;
+        }
+
+        /* Signal Cards */
+        .signal-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signal-card.sell {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .signal-card.neutral {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .signal-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .badge-buy { background: var(--success); color: white; }
+        .badge-sell { background: var(--danger); color: white; }
+        .badge-neutral { background: var(--warning); color: white; }
+
+        .signal-timeframe {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .signal-price {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .signal-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .detail-box {
+            background: rgba(0,0,0,0.2);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .detail-value.entry { color: var(--info); }
+        .detail-value.sl { color: var(--danger); }
+        .detail-value.tp { color: var(--success); }
+
+        .signal-strength {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .strength-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .strength-text {
+            font-size: 12px;
+            font-weight: 800;
+            min-width: 40px;
+        }
+
+        /* Analysis Section */
+        .analysis-item {
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-right: 3px solid var(--gold-dark);
+        }
+
+        .analysis-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--gold-primary);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .analysis-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .indicator-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .indicator-row:last-child {
+            border-bottom: none;
+        }
+
+        .indicator-name {
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .indicator-value {
+            font-size: 13px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+
+        .ind-buy { color: var(--success); background: rgba(16, 185, 129, 0.1); }
+        .ind-sell { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+        .ind-neutral { color: var(--warning); background: rgba(245, 158, 11, 0.1); }
+
+        /* News Section */
+        .news-item {
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-right: 3px solid var(--info);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .news-item:hover {
+            background: var(--bg-hover);
+            transform: translateX(-3px);
+        }
+
+        .news-item.high-impact {
+            border-right-color: var(--danger);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2); }
+            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        }
+
+        .news-time {
+            font-size: 11px;
+            color: var(--gold-secondary);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .news-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .news-impact {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        .impact-high { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .impact-medium { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .impact-low { background: rgba(59, 130, 246, 0.2); color: var(--info); }
+
+        /* Liquidity Zones */
+        .liquidity-zone {
+            padding: 10px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .zone-label {
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .zone-price {
+            font-family: 'Courier New', monospace;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .zone-buy { color: var(--success); }
+        .zone-sell { color: var(--danger); }
+
+        /* Order Blocks */
+        .ob-item {
+            padding: 10px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-right: 3px solid var(--gold-dark);
+        }
+
+        .ob-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .ob-type {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--gold-primary);
+        }
+
+        .ob-strength {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--gold-secondary);
+        }
+
+        .ob-range {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-dark);
+            border-radius: 3px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .main-container {
+                grid-template-columns: 260px 1fr 300px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-left, .sidebar-right {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+        }
+
+        /* Market Sentiment */
+        .sentiment-gauge {
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(to right, var(--danger), var(--warning), var(--success));
+            border-radius: 15px;
+            position: relative;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .gauge-marker {
+            position: absolute;
+            top: -5px;
+            width: 4px;
+            height: 40px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: left 0.5s ease;
+        }
+
+        .gauge-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-secondary);
+        }
+
+        /* FVG */
+        .fvg-item {
+            padding: 8px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .fvg-bullish { border-right: 3px solid var(--success); }
+        .fvg-bearish { border-right: 3px solid var(--danger); }
+
+        /* Countdown */
+        .countdown-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .countdown-title {
+            font-size: 13px;
+            color: var(--danger);
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .countdown-timer {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--danger);
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .countdown-event {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        /* Loading Animation */
+        .loading-bar {
+            width: 100%;
+            height: 3px;
+            background: var(--bg-secondary);
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+
+        .loading-progress {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold-primary), var(--gold-secondary));
+            animation: loading 2s ease-in-out infinite;
+            border-radius: 2px;
+        }
+
+        @keyframes loading {
+            0% { width: 0%; right: 100%; }
+            50% { width: 100%; right: 0; }
+            100% { width: 0%; right: 0; }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">Au</div>
+            <div class="logo-text">GOLD PRO ANALYTICS</div>
+        </div>
+
+        <div class="header-info">
+            <div class="time-box">
+                <div class="time-label">الوقت في ألمانيا</div>
+                <div class="time-value" id="germany-time">--:--:--</div>
+            </div>
+            <div class="time-box">
+                <div class="time-label">التاريخ</div>
+                <div class="time-value" id="current-date">--/--/----</div>
+            </div>
+            <div class="price-ticker">
+                <div class="ticker-item">
+                    <div class="ticker-label">XAU/USD</div>
+                    <div class="ticker-value" id="gold-price">2,345.67</div>
+                    <div class="ticker-change change-up" id="price-change">+12.45 (+0.53%)</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <div class="sidebar-left">
+            <!-- Timeframes -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-clock"></i> الفريمات الزمنية</div>
+                </div>
+                <div class="timeframe-buttons">
+                    <button class="tf-btn" data-tf="1">1د</button>
+                    <button class="tf-btn active" data-tf="5">5د</button>
+                    <button class="tf-btn" data-tf="15">15د</button>
+                    <button class="tf-btn" data-tf="60">1س</button>
+                    <button class="tf-btn" data-tf="240">4س</button>
+                    <button class="tf-btn" data-tf="D">يومي</button>
+                </div>
+            </div>
+
+            <!-- Market Sentiment -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-balance-scale"></i> مؤشر المشاعر</div>
+                </div>
+                <div class="sentiment-gauge">
+                    <div class="gauge-marker" id="sentiment-marker" style="left: 65%;"></div>
+                </div>
+                <div class="gauge-labels">
+                    <span>بيع قوي</span>
+                    <span>محايد</span>
+                    <span>شراء قوي</span>
+                </div>
+                <div style="text-align: center; margin-top: 10px; font-size: 14px; font-weight: 800; color: var(--success);">
+                    اتجاه صاعد قوي - 65%
+                </div>
+            </div>
+
+            <!-- Technical Indicators -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-chart-line"></i> المؤشرات الفنية</div>
+                </div>
+                <div class="indicator-row">
+                    <div class="indicator-name"><i class="fas fa-wave-square" style="color: #8b5cf6;"></i> RSI (14)</div>
+                    <div class="indicator-value ind-buy">62.45</div>
+                </div>
+                <div class="indicator-row">
+                    <div class="indicator-name"><i class="fas fa-arrow-trend-up" style="color: #3b82f6;"></i> EMA 50</div>
+                    <div class="indicator-value ind-buy">أعلى</div>
+                </div>
+                <div class="indicator-row">
+                    <div class="indicator-name"><i class="fas fa-arrow-trend-up" style="color: #3b82f6;"></i> EMA 200</div>
+                    <div class="indicator-value ind-buy">أعلى</div>
+                </div>
+                <div class="indicator-row">
+                    <div class="indicator-name"><i class="fas fa-water" style="color: #06b6d4;"></i> MACD</div>
+                    <div class="indicator-value ind-buy">إيجابي</div>
+                </div>
+                <div class="indicator-row">
+                    <div class="indicator-name"><i class="fas fa-layer-group" style="color: #f59e0b;"></i> Bollinger</div>
+                    <div class="indicator-value ind-neutral">وسط</div>
+                </div>
+                <div class="indicator-row">
+                    <div class="indicator-name"><i class="fas fa-compress-arrows-alt" style="color: #ec4899;"></i> Stochastic</div>
+                    <div class="indicator-value ind-buy">شراء</div>
+                </div>
+                <div class="indicator-row">
+                    <div class="indicator-name"><i class="fas fa-chart-area" style="color: #10b981;"></i> ADX</div>
+                    <div class="indicator-value ind-buy">28.5 قوي</div>
+                </div>
+                <div class="indicator-row">
+                    <div class="indicator-name"><i class="fas fa-volume-up" style="color: #f97316;"></i> Volume</div>
+                    <div class="indicator-value ind-buy">مرتفع</div>
+                </div>
+            </div>
+
+            <!-- Liquidity Zones -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-water"></i> مناطق السيولة</div>
+                </div>
+                <div class="liquidity-zone">
+                    <div class="zone-label"><i class="fas fa-arrow-up" style="color: var(--success);"></i> سيولة شراء</div>
+                    <div class="zone-price zone-buy">2,340.20 - 2,342.50</div>
+                </div>
+                <div class="liquidity-zone">
+                    <div class="zone-label"><i class="fas fa-arrow-down" style="color: var(--danger);"></i> سيولة بيع</div>
+                    <div class="zone-price zone-sell">2,348.80 - 2,351.00</div>
+                </div>
+                <div class="liquidity-zone">
+                    <div class="zone-label"><i class="fas fa-bullseye" style="color: var(--warning);"></i> نقطة التوازن</div>
+                    <div class="zone-price" style="color: var(--warning);">2,345.00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center - Chart -->
+        <div class="center-area">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-candlestick" style="color: var(--gold-primary);"></i>
+                        XAU/USD - الذهب مقابل الدولار
+                        <span style="font-size: 13px; color: var(--text-secondary); margin-right: 10px;">فريم 5 دقائق</span>
+                    </div>
+                    <div class="chart-tools">
+                        <button class="tool-btn active" data-tool="candles"><i class="fas fa-chart-bar"></i> شموع</button>
+                        <button class="tool-btn" data-tool="line"><i class="fas fa-chart-line"></i> خط</button>
+                        <button class="tool-btn" data-tool="heikin"><i class="fas fa-fire"></i> هيكين</button>
+                        <button class="tool-btn" data-tool="ob"><i class="fas fa-cube"></i> OB</button>
+                        <button class="tool-btn" data-tool="fvg"><i class="fas fa-gap"></i> FVG</button>
+                        <button class="tool-btn" data-tool="liquidity"><i class="fas fa-water"></i> سيولة</button>
+                    </div>
+                </div>
+                <div id="chart"></div>
+            </div>
+
+            <!-- Analysis Section -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-brain"></i> التحليل الفني العميق (SMC)</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <div class="analysis-item">
+                            <div class="analysis-title"><i class="fas fa-cube"></i> Order Blocks نشطة</div>
+                            <div class="analysis-text">
+                                OB شرائية عند 2,338.50 (H4) - تم اختبارها وارتداد قوي<br>
+                                OB بيعية عند 2,348.20 (H1) - لم تُختبر بعد
+                            </div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-title"><i class="fas fa-bolt"></i> Fair Value Gaps</div>
+                            <div class="analysis-text">
+                                FVG صاعد: 2,341.20 - 2,342.80 (15د)<br>
+                                FVG هابط: 2,347.00 - 2,346.20 (5د) - مغلق جزئياً
+                            </div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-title"><i class="fas fa-exchange-alt"></i> Break of Structure</div>
+                            <div class="analysis-text">
+                                BOS صاعد على فريم الساعة عند كسر 2,344.00<br>
+                                CHoCH محتمل إذا كسر 2,343.00
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="analysis-item">
+                            <div class="analysis-title"><i class="fas fa-water"></i> Liquidity Sweeps</div>
+                            <div class="analysis-text">
+                                تم سحب سيولة البائعين عند 2,339.50 قبل الارتداد<br>
+                                سيولة مشترين عند 2,335.00 (Stop Loss Hunting)
+                            </div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-title"><i class="fas fa-chart-pie"></i> Market Structure</div>
+                            <div class="analysis-text">
+                                الاتجاه العام: صاعد على اليومي وال4 ساعات<br>
+                                الاتجاه الفرعي: تصحيح هابط على الساعة<br>
+                                الاتجاه الصغير: صاعد على 15 دقيقة
+                            </div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-title"><i class="fas fa-crosshairs"></i> Premium/Discount</div>
+                            <div class="analysis-text">
+                                السعر حالياً في منطقة Premium (فوق نقطة التوازن)<br>
+                                منطقة Discount المثلى للشراء: 2,340.00 - 2,342.00
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="sidebar-right">
+            <!-- News Countdown -->
+            <div class="countdown-box" id="news-countdown">
+                <div class="countdown-title"><i class="fas fa-exclamation-triangle"></i> خبر هام قادم</div>
+                <div class="countdown-timer" id="countdown-timer">04:32</div>
+                <div class="countdown-event">مؤشر مبيعات التجزئة الأمريكية - تأثير عالي</div>
+            </div>
+
+            <!-- Trading Signals -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-satellite-dish"></i> إشارات التداول</div>
+                </div>
+
+                <div class="signal-card">
+                    <div class="signal-badge badge-buy">شراء قوي</div>
+                    <div class="signal-timeframe">فريم 15 دقيقة</div>
+                    <div class="signal-price" style="color: var(--success);">2,342.30</div>
+                    <div class="signal-details">
+                        <div class="detail-box">
+                            <div class="detail-label">الدخول</div>
+                            <div class="detail-value entry">2,342.30</div>
+                        </div>
+                        <div class="detail-box">
+                            <div class="detail-label">وقف الخسارة</div>
+                            <div class="detail-value sl">2,339.80</div>
+                        </div>
+                        <div class="detail-box">
+                            <div class="detail-label">الهدف</div>
+                            <div class="detail-value tp">2,348.50</div>
+                        </div>
+                    </div>
+                    <div class="signal-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" style="width: 92%; background: var(--success);"></div>
+                        </div>
+                        <div class="strength-text" style="color: var(--success);">92%</div>
+                    </div>
+                </div>
+
+                <div class="signal-card sell">
+                    <div class="signal-badge badge-sell">بيع</div>
+                    <div class="signal-timeframe">فريم 1 ساعة</div>
+                    <div class="signal-price" style="color: var(--danger);">2,347.80</div>
+                    <div class="signal-details">
+                        <div class="detail-box">
+                            <div class="detail-label">الدخول</div>
+                            <div class="detail-value entry">2,347.80</div>
+                        </div>
+                        <div class="detail-box">
+                            <div class="detail-label">وقف الخسارة</div>
+                            <div class="detail-value sl">2,350.50</div>
+                        </div>
+                        <div class="detail-box">
+                            <div class="detail-label">الهدف</div>
+                            <div class="detail-value tp">2,342.00</div>
+                        </div>
+                    </div>
+                    <div class="signal-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" style="width: 78%; background: var(--danger);"></div>
+                        </div>
+                        <div class="strength-text" style="color: var(--danger);">78%</div>
+                    </div>
+                </div>
+
+                <div class="signal-card neutral">
+                    <div class="signal-badge badge-neutral">انتظار</div>
+                    <div class="signal-timeframe">فريم 4 ساعات</div>
+                    <div class="signal-price" style="color: var(--warning);">2,345.00</div>
+                    <div class="analysis-text" style="margin-top: 10px; font-size: 12px;">
+                        انتظار كسر 2,348.00 للشراء أو 2,340.00 للبيع
+                    </div>
+                    <div class="signal-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" style="width: 50%; background: var(--warning);"></div>
+                        </div>
+                        <div class="strength-text" style="color: var(--warning);">50%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Economic News -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-newspaper"></i> الأخبار الاقتصادية</div>
+                </div>
+
+                <div class="news-item high-impact">
+                    <div class="news-time">14:30 (5 دقائق)</div>
+                    <div class="news-title">مؤشر مبيعات التجزئة الأساسية الأمريكية</div>
+                    <div class="news-impact impact-high">تأثير عالي</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-time">16:00</div>
+                    <div class="news-title">مخزونات الجملة الأمريكية</div>
+                    <div class="news-impact impact-medium">تأثير متوسط</div>
+                </div>
+
+                <div class="news-item high-impact">
+                    <div class="news-time">غداً 14:30</div>
+                    <div class="news-title">مطالبات إعانة البطالة الأولية</div>
+                    <div class="news-impact impact-high">تأثير عالي</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-time">غداً 16:00</div>
+                    <div class="news-title">مؤشر JOLT للوظائف الشاغرة</div>
+                    <div class="news-impact impact-medium">تأثير متوسط</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-time">الجمعة 14:30</div>
+                    <div class="news-title">مؤشر مديري المشتريات التصنيعي</div>
+                    <div class="news-impact impact-low">تأثير منخفض</div>
+                </div>
+            </div>
+
+            <!-- Order Blocks List -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-cubes"></i> Order Blocks رئيسية</div>
+                </div>
+
+                <div class="ob-item">
+                    <div class="ob-header">
+                        <div class="ob-type"><i class="fas fa-arrow-up" style="color: var(--success);"></i> Bullish OB</div>
+                        <div class="ob-strength">H4 - قوي</div>
+                    </div>
+                    <div class="ob-range">2,338.20 - 2,339.80</div>
+                </div>
+
+                <div class="ob-item">
+                    <div class="ob-header">
+                        <div class="ob-type"><i class="fas fa-arrow-down" style="color: var(--danger);"></i> Bearish OB</div>
+                        <div class="ob-strength">H1 - متوسط</div>
+                    </div>
+                    <div class="ob-range">2,348.00 - 2,349.50</div>
+                </div>
+
+                <div class="ob-item">
+                    <div class="ob-header">
+                        <div class="ob-type"><i class="fas fa-arrow-up" style="color: var(--success);"></i> Bullish OB</div>
+                        <div class="ob-strength">M15 - ضعيف</div>
+                    </div>
+                    <div class="ob-range">2,343.50 - 2,344.20</div>
+                </div>
+            </div>
+
+            <!-- FVG List -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-bolt"></i> Fair Value Gaps</div>
+                </div>
+
+                <div class="fvg-item fvg-bullish">
+                    <span style="color: var(--success); font-weight: 800;">Bullish FVG</span>
+                    <span style="font-family: monospace;">2,341.20 - 2,342.80</span>
+                </div>
+
+                <div class="fvg-item fvg-bearish">
+                    <span style="color: var(--danger); font-weight: 800;">Bearish FVG</span>
+                    <span style="font-family: monospace;">2,346.50 - 2,345.80</span>
+                </div>
+
+                <div class="fvg-item fvg-bullish">
+                    <span style="color: var(--success); font-weight: 800;">Bullish FVG</span>
+                    <span style="font-family: monospace;">2,339.00 - 2,340.10</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Germany Time
+        function updateGermanyTime() {
+            const now = new Date();
+            const germanyTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Berlin"}));
+            const hours = String(germanyTime.getHours()).padStart(2, '0');
+            const minutes = String(germanyTime.getMinutes()).padStart(2, '0');
+            const seconds = String(germanyTime.getSeconds()).padStart(2, '0');
+            document.getElementById('germany-time').textContent = `${hours}:${minutes}:${seconds}`;
+
+            const day = String(germanyTime.getDate()).padStart(2, '0');
+            const month = String(germanyTime.getMonth() + 1).padStart(2, '0');
+            const year = germanyTime.getFullYear();
+            document.getElementById('current-date').textContent = `${day}/${month}/${year}`;
+        }
+        setInterval(updateGermanyTime, 1000);
+        updateGermanyTime();
+
+        // Price simulation
+        let currentPrice = 2345.67;
+        function updatePrice() {
+            const change = (Math.random() - 0.48) * 0.5;
+            currentPrice += change;
+            document.getElementById('gold-price').textContent = currentPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+            const changePercent = ((currentPrice - 2333.22) / 2333.22 * 100).toFixed(2);
+            const changeEl = document.getElementById('price-change');
+            if (changePercent >= 0) {
+                changeEl.textContent = `+${changePercent}%`;
+                changeEl.className = 'ticker-change change-up';
+            } else {
+                changeEl.textContent = `${changePercent}%`;
+                changeEl.className = 'ticker-change change-down';
+            }
+        }
+        setInterval(updatePrice, 2000);
+
+        // Countdown timer
+        let countdownSeconds = 272; // 4:32
+        function updateCountdown() {
+            countdownSeconds--;
+            if (countdownSeconds < 0) countdownSeconds = 600;
+            const m = String(Math.floor(countdownSeconds / 60)).padStart(2, '0');
+            const s = String(countdownSeconds % 60).padStart(2, '0');
+            document.getElementById('countdown-timer').textContent = `${m}:${s}`;
+        }
+        setInterval(updateCountdown, 1000);
+
+        // Chart Setup
+        const chartElement = document.getElementById('chart');
+        const chart = LightweightCharts.createChart(chartElement, {
+            layout: {
+                background: { color: '#1a1f2e' },
+                textColor: '#94a3b8',
+            },
+            grid: {
+                vertLines: { color: '#2d3748', style: 2 },
+                horzLines: { color: '#2d3748', style: 2 },
+            },
+            crosshair: {
+                mode: LightweightCharts.CrosshairMode.Normal,
+                vertLine: { color: '#ffd700', width: 1, style: 2 },
+                horzLine: { color: '#ffd700', width: 1, style: 2 },
+            },
+            rightPriceScale: {
+                borderColor: '#2d3748',
+            },
+            timeScale: {
+                borderColor: '#2d3748',
+                timeVisible: true,
+                secondsVisible: false,
+            },
+        });
+
+        // Generate realistic gold data
+        function generateData() {
+            const data = [];
+            let price = 2330;
+            const now = new Date();
+            now.setHours(now.getHours() - 24);
+
+            for (let i = 0; i < 288; i++) { // 24 hours of 5-min candles
+                const time = new Date(now.getTime() + i * 5 * 60000);
+                const volatility = 2.5;
+                const trend = Math.sin(i / 30) * 5 + i * 0.05;
+
+                const open = price + (Math.random() - 0.5) * volatility;
+                const close = open + (Math.random() - 0.5) * volatility + trend * 0.1;
+                const high = Math.max(open, close) + Math.random() * volatility * 0.5;
+                const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+
+                data.push({
+                    time: time.getTime() / 1000,
+                    open: open,
+                    high: high,
+                    low: low,
+                    close: close
+                });
+                price = close;
+            }
+            return data;
+        }
+
+        const candleSeries = chart.addCandlestickSeries({
+            upColor: '#10b981',
+            downColor: '#ef4444',
+            borderUpColor: '#10b981',
+            borderDownColor: '#ef4444',
+            wickUpColor: '#10b981',
+            wickDownColor: '#ef4444',
+        });
+
+        const data = generateData();
+        candleSeries.setData(data);
+
+        // Add EMA lines
+        function calculateEMA(data, period) {
+            const k = 2 / (period + 1);
+            const emaData = [];
+            let ema = data[0].close;
+
+            for (let i = 0; i < data.length; i++) {
+                ema = data[i].close * k + ema * (1 - k);
+                emaData.push({ time: data[i].time, value: ema });
+            }
+            return emaData;
+        }
+
+        const ema20 = chart.addLineSeries({ color: '#3b82f6', lineWidth: 2, title: 'EMA 20' });
+        const ema50 = chart.addLineSeries({ color: '#f59e0b', lineWidth: 2, title: 'EMA 50' });
+        const ema200 = chart.addLineSeries({ color: '#ec4899', lineWidth: 2, title: 'EMA 200' });
+
+        ema20.setData(calculateEMA(data, 20));
+        ema50.setData(calculateEMA(data, 50));
+        ema200.setData(calculateEMA(data, 200));
+
+        // Support/Resistance lines
+        const supportLine = chart.addLineSeries({ 
+            color: '#10b981', 
+            lineWidth: 1, 
+            lineStyle: 2,
+            title: 'Support'
+        });
+        supportLine.setData([
+            { time: data[0].time, value: 2340 },
+            { time: data[data.length-1].time, value: 2340 }
+        ]);
+
+        const resistanceLine = chart.addLineSeries({ 
+            color: '#ef4444', 
+            lineWidth: 1, 
+            lineStyle: 2,
+            title: 'Resistance'
+        });
+        resistanceLine.setData([
+            { time: data[0].time, value: 2350 },
+            { time: data[data.length-1].time, value: 2350 }
+        ]);
+
+        chart.timeScale().fitContent();
+
+        // Timeframe buttons
+        document.querySelectorAll('.tf-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                // In real app, this would fetch new data for the timeframe
+            });
+        });
+
+        // Tool buttons
+        document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // Dynamic sentiment marker
+        setInterval(() => {
+            const sentiment = 40 + Math.random() * 40;
+            document.getElementById('sentiment-marker').style.left = sentiment + '%';
+        }, 5000);
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            chart.applyOptions({ width: chartElement.clientWidth, height: chartElement.clientHeight });
+        });
+    </script>
+</body>
+</html>
